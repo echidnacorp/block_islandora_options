@@ -1,0 +1,5 @@
+name = Islandora block options
+description = Provides additional options for blocks based on islandora contexts.
+core = 7.x
+dependencies[] = islandora
+dependencies[] = block

@@ -1,0 +1,42 @@
+<?php
+
+/**
+ * @file
+ * Install, update and uninstall functions for the block_islandora_options
+ * module.
+ */
+
+/**
+ * Implements hook_schema().
+ */
+function block_islandora_options_schema() {
+  $schema['block_islandora_options'] = array(
+    'description' => 'Sets up display criteria for blocks based on Islandora context',
+    'fields' => array(
+      'module' => array(
+        'type' => 'varchar',
+        'length' => 64,
+        'not null' => TRUE,
+        'description' => "The block's origin module, from {block}.module.",
+      ),
+      'delta' => array(
+        'type' => 'varchar',
+        'length' => 32,
+        'not null' => TRUE,
+        'description' => "The block's unique delta within module, from {block}.delta.",
+      ),
+      'cmodel' => array(
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'description' => "The cmodel name of this type from islandora.",
+      ),
+    ),
+    'primary key' => array('module', 'delta', 'cmodel'),
+    'indexes' => array(
+      'status' => array('cmodel'),
+    ),
+  );
+
+  return $schema;
+}
