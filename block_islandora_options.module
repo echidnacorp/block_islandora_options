@@ -64,15 +64,26 @@ function block_islandora_options_form_block_admin_configure_submit($form, &$form
     ->execute();
   if (count($form_state['values']['islandora_cmodels_status']) > 0) {
     foreach (array_filter($form_state['values']['islandora_cmodels_status']) as $pid) {
-      db_insert('block_islandora_options')
-        ->fields(array(
-          'cmodel' => $pid,
-          'module' => $form_state['values']['module'],
-          'delta' => $form_state['values']['delta'],
-        ))
-        ->execute();
+      $opt = new stdClass;
+      $opt->cmodel = $pid;
+      $opt->module = $form_state['values']['module'];
+      $opt->delta = $form_state['values']['delta'];
+      block_islandora_options_save_option($opt);
     }
   }
+}
+
+/**
+ * Add the passed option to the database.
+ */
+function block_islandora_options_save_option($opt) {
+  db_insert('block_islandora_options')
+    ->fields(array(
+      'cmodel' => $opt->cmodel,
+      'module' => $opt->module,
+      'delta' => $opt->delta,
+    ))
+    ->execute();
 }
 
 /**
@@ -107,4 +118,30 @@ function block_islandora_options_block_list_alter(&$blocks) {
       }
     }
   }
+}
+
+/**
+ * Implements hook_features_api().
+ */
+function block_islandora_options_features_api() {
+  return array(
+    'block_islandora_options_config' => array(
+      'name' => 'Islandora block options config',
+      'file' => drupal_get_path('module', 'block_islandora_options') . '/block_islandora_options.features.inc',
+      'default_hook' => 'block_islandora_options_config_features_default_settings',
+      'feature_source' => TRUE,
+    ),
+  );
+}
+
+/**
+ * Returns all options.
+ */
+function block_islandora_options_all_options() {
+  $opts = db_select('block_islandora_options', 'bio')
+    ->fields('bio')
+    ->orderBy('oid', 'ASC')
+    ->execute()
+    ->fetchAllAssoc('oid');
+  return $opts;
 }
