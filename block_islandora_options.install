@@ -13,6 +13,12 @@ function block_islandora_options_schema() {
   $schema['block_islandora_options'] = array(
     'description' => 'Sets up display criteria for blocks based on Islandora context',
     'fields' => array(
+      'oid' => array(
+        'type' => 'serial',
+        'length' => 12,
+        'not null' => TRUE,
+        'description' => "Unique ID for this table",
+      ),
       'module' => array(
         'type' => 'varchar',
         'length' => 64,
@@ -32,11 +38,26 @@ function block_islandora_options_schema() {
         'description' => "The cmodel name of this type from islandora.",
       ),
     ),
-    'primary key' => array('module', 'delta', 'cmodel'),
+    'primary key' => array('oid'),
     'indexes' => array(
       'status' => array('cmodel'),
+    ),
+    'unique keys' => array(
+      'block' => array('module', 'delta', 'cmodel'),
     ),
   );
 
   return $schema;
+}
+
+/**
+ * Add the oid column
+ */
+function block_islandora_options_update_7100() {
+  if (!db_field_exists("block_islandora_options", "oid")) {
+    $schema = block_islandora_options_schema();
+    db_drop_primary_key('block_islandora_options');
+    db_add_field('block_islandora_options', "oid", $schema['block_islandora_options']['fields']['oid'], array('primary key' => array('oid')));
+    db_add_unique_key('block_islandora_options', 'block', array('module', 'delta', 'cmodel'));
+  }
 }
