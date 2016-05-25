@@ -139,9 +139,9 @@ function block_islandora_options_features_api() {
  */
 function block_islandora_options_all_options() {
   $opts = db_select('block_islandora_options', 'bio')
-    ->fields('bio')
+    ->fields('bio', array('cmodel', 'delta', 'module'))
     ->orderBy('oid', 'ASC')
     ->execute()
-    ->fetchAllAssoc('oid');
+    ->fetchAll();
   return $opts;
 }
